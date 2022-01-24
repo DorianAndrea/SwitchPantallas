@@ -5,7 +5,9 @@ import {
   Button,
   StyleSheet,
   Text,
+  FlatList,
 } from 'react-native';
+import TaskList from './src/components/molecules/tasklist/index';
 
 const App = () => {
   const [task, setTask] = useState('');
@@ -16,10 +18,16 @@ const App = () => {
   }
 
   const addTask = () => {
-    setTaskList([...taskList, task]);
+    setTaskList([...taskList, {id: Math.random(), task}]);
     setTask('');
     
   }
+
+  const deleteTask = (id) =>{
+    setTaskList(taskList.filter(task => task.id !== id));
+  }
+
+  //console.warn(taskList);
 
   return(
     <View style={styles.container}>
@@ -38,18 +46,21 @@ const App = () => {
           disabled={task.trim().length === 0}
         />
       </View >
-     
         <View style={styles.taskListContainer}>
           <Text style={styles.taskListTitle}>Task List</Text>
           {taskList.length > 0 ? (
-            taskList.map((task, index) => (
-              <Text key={index}>{task}</Text>
-            ))
+            <FlatList
+              keyExtractor={(item) => item.id.toString()}
+              refreshing={true}
+              data={taskList}
+              renderItem={({item}) => <TaskList task={item} deleteTask={deleteTask}/>}
+            
+            />
           ):(
             <Text>No tasks yet</Text>
           )}
         </View>
-    </View>
+    </View> 
   );
 };
 
@@ -80,6 +91,15 @@ const styles = StyleSheet.create({
   taskListContainer :{ 
    paddingHorizontal: 40,
    marginTop: 20,   
+  },
+  delete : {
+    backgroundColor: 'red',
+    alignItems:'center',
+    width:20,
+    height:20,
+    marginHorizontal:10,
+    margin:10,
+    color:'#ffffff',
   }
 });
 
